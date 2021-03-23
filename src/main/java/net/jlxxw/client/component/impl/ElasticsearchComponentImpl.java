@@ -129,7 +129,6 @@ public class ElasticsearchComponentImpl implements ElasticsearchComponent {
         try {
             return client.indices().create(request, DEFAULT);
         } catch (IOException e) {
-            e.printStackTrace();
             logger.error("创建索引出现异常,",e);
             throw new RuntimeException(e.getMessage());
         }
