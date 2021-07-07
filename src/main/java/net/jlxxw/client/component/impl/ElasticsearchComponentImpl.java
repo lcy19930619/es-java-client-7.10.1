@@ -313,5 +313,52 @@ public class ElasticsearchComponentImpl implements ElasticsearchComponent {
         return client;
     }
 
-
+    /**
+     * 根据条件进行搜索
+     * <pre>
+     *      精确等于查询：age = 10
+     *      searchSourceBuilder.query(QueryBuilders.termQuery("age", 10));
+     *
+     *      分词查询: 名字包含张三
+     *      searchSourceBuilder.query(QueryBuilders.matchQuery("name","张三"))
+     *
+     *      纠错检索，让输入条件有容错性
+     *      例如：你输入个“邓子棋”，也能把“邓紫棋”查出来，有一定的纠错能力
+     *      searchSourceBuilder.query(QueryBuilders.fuzzyQuery("name","张三"));
+     *
+     *      通配符检索
+     *      searchSourceBuilder.query(QueryBuilders.wildcardQuery("name","*张三"));  // 右匹配
+     *      searchSourceBuilder.query(QueryBuilders.wildcardQuery("name","张三*"));  // 左匹配
+     *      searchSourceBuilder.query(QueryBuilders.wildcardQuery("name","*张三*")); // 中匹配
+     *
+     *      范围查询：age 1 - 10
+     *      searchSourceBuilder.query(QueryBuilders.boolQuery().must(QueryBuilders.rangeQuery("age").from(1).to(10)));
+     *
+     *      分页大小: 每页10条
+     *      searchSourceBuilder.size(10);
+     *
+     *      设置分页起始位置：从0开始
+     *      searchSourceBuilder.from(0);
+     *
+     *      排序
+     *      searchSourceBuilder.sort("age", SortOrder.ASC);
+     * </pre>
+     *
+     * @param indexName           索引名字
+     * @param searchSourceBuilder 搜索条件构建器
+     * @return 搜索结果
+     */
+    @Override
+    public SearchResponse originalQueryCondition(String indexName, SearchSourceBuilder searchSourceBuilder) {
+        // npe验证
+        Objects.requireNonNull(searchSourceBuilder);
+        try {
+            SearchRequest searchRequest = new SearchRequest(indexName);
+            searchRequest.source(searchSourceBuilder);
+            return  client.search(searchRequest, RequestOptions.DEFAULT);
+        } catch (IOException e) {
+            logger.error("搜索出现异常,index:{},query:{}",indexName,searchSourceBuilder.toString(),e);
+            throw new RuntimeException("search error,"+e);
+        }
+    }
 }
