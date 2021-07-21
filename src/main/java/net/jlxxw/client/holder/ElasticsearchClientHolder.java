@@ -8,8 +8,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -27,11 +25,11 @@ public class ElasticsearchClientHolder {
     /**
      * 配置文件路径
      */
-    private static final String FILENAME = "/Users/lcy/IdeaProjects/es-java-client/src/main/resources/application.properties";
+    private static final String FILENAME = "application.properties";
 
     static {
         Properties properties = new Properties();
-        try (InputStream in = new BufferedInputStream(new FileInputStream(FILENAME))){
+        try (InputStream in = ElasticsearchClientHolder.class.getClassLoader().getResourceAsStream(FILENAME);){
             properties.load(in);
 
             String schema = properties.getProperty("elasticsearch.schema");
