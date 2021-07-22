@@ -1,8 +1,11 @@
 package net.jlxxw.client.db;
 
 import net.jlxxw.client.domain.CsdnDO;
+import net.jlxxw.client.holder.ElasticsearchClientHolder;
 import net.jlxxw.client.util.HtmlToText;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,14 +16,30 @@ import java.util.Properties;
  * @date 2021-07-21 5:23 下午
  */
 public class DataBaseClient {
-    String url = "jdbc:mysql://127.0.0.1:3306/temp?useUnicode=true&characterEncoding=utf8&autoReconnect=true&rewriteBatchedStatements=TRUE";
+    private static final String FILENAME = "application.properties";
+    private static String url = "";
+    private static String username="";
+    private static String password="";
+
+    public DataBaseClient() throws IOException {
+        init();
+    }
+    public static void init() throws IOException{
+        Properties properties = new Properties();
+        try (InputStream in = ElasticsearchClientHolder.class.getClassLoader().getResourceAsStream(FILENAME)) {
+            properties.load(in);
+            url = properties.getProperty("mysql.url");
+            username = properties.getProperty("mysql.username");
+            password =  properties.getProperty("mysql.password");
+        }
+    }
 
 
 
     public List<CsdnDO> getData(){
         Properties info = new Properties();  //定义Properties对象
-        info.setProperty("user","root");  //设置Properties对象属性
-        info.setProperty("password","123456");
+        info.setProperty("user",username);  //设置Properties对象属性
+        info.setProperty("password",password);
         List<CsdnDO> list = new ArrayList<>();
         try (Connection connection = DriverManager.getConnection(url,info)) {
             Statement statement = connection.createStatement();

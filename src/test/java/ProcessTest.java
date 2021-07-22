@@ -7,6 +7,7 @@ import net.jlxxw.client.holder.ElasticsearchClientHolder;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -24,7 +25,7 @@ public class ProcessTest {
     }
 
     @Test
-    public void test() throws InterruptedException {
+    public void test() throws InterruptedException, IOException {
         List<CsdnDO> data = new DataBaseClient().getData();
         if(elasticsearchComponent.exists(INDEX_NAME)){
             // 存在索引
